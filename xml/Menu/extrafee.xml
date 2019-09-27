@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/extrafeesettings</path>
+    <page_callback>CRM_Extrafee_Form_ExtraFeeSettings</page_callback>
+    <title>ExtraFeeSettings</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
