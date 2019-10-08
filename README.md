@@ -1,6 +1,15 @@
 # nz.co.fuzion.extrafee
 
-This extension applies additional percentage amount on the total payment. It is required when you need to cover extra credit card fee or processing fee for the CC payment.
+This extension allows for a credit card fee and optional processing fee for the CC payment to be added to the total to be paid via any payment processor that uses Credit Cards or other payment gateways. It does not get applied for Pay Later transactions.
+
+The extension provides a configurable 
+- percentage field
+- an optional Processing charge field
+- a message field that will display below the Contribution amount.
+
+It calculates the extra amount to be paid for Contribution and Event pages whether they are using Price Sets or Price options. It applies to all payment pages across the site.
+
+It provides a configurable message under the Total Amount stating what has been charged and what the new total is (which helps if you are not using a Price Set as otherwise the user does not see the new Total)
 
 The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
@@ -36,5 +45,9 @@ cv en extrafee
 ## Usage
 
 - Install the extension.
-- Navigate to "Administer >> CiviContribute >> Extrafee Settings" or /civicrm/extrafeesettings URL to set the percentage and message that needs to be applied on the total amount.
-- Load any live contribution page or the event registration page. Currently, the additional fee will be applied to all the processor except pay later. So only enable those PP on the page which should have this fee applied.
+- Navigate to "Administer >> CiviContribute >> Extrafee Settings" or /civicrm/extrafeesettings URL to set the percentage, optional 'processing fee' and message that needs to be applied on the total amount.
+- Load any live contribution page or the event registration page. Currently, the additional fee will be applied to all the processors except Pay Later.
+
+## Other solutions
+
+https://github.com/twomice/com.joineryhq.percentagepricesetfield provides options to add a "Percentage" price set field, which can add an additional amount to a transaction, as a configurable percentage of other selected price set options.
