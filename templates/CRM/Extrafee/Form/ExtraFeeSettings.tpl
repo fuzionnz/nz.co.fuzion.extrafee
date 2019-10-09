@@ -10,16 +10,12 @@
   <div class="crm-section">
     <div class="label">{$form.$elementName.label}</div>
     <div class="content">{$form.$elementName.html}</div>
+    {if $elementName EQ 'extra_fee_message'}
+      <div class='content description'>Insert {literal}{total_amount}{/literal} token in the above field to display the calculated amount in the message.</div>
+    {/if}
     <div class="clear"></div>
   </div>
 {/foreach}
-
-{* FIELD EXAMPLE: OPTION 2 (MANUAL LAYOUT)
-
-  <div>
-    <span>{$form.favorite_color.label}</span>
-    <span>{$form.favorite_color.html}</span>
-  </div>
 
 {* FOOTER *}
 <div class="crm-submit-buttons">

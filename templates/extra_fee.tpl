@@ -4,9 +4,9 @@ CRM.$(function($) {
   var isQuickConfig = {/literal}{$is_quick_config}{literal};
   var payNowPayment = {/literal} {if $payNowPayment} {$payNowPayment} {else} 0 {/if}{literal};
   var percent = {/literal} {if $extraFeePercentage} {$extraFeePercentage} {else} 0 {/if}{literal};
+  var processingFee = {/literal} {if $extraFeeProcessingFee} {$extraFeeProcessingFee} {else} 0 {/if}{literal};
   var message = {/literal} {if $extraFeeMessage} '{$extraFeeMessage}' {else} '' {/if}{literal};
-
-  $msg = '<br /><div id="extra_fee_msg">'+ message +'</div>';
+  $msg = '<div class="content" id="extra_fee_msg">'+ message.replace(/{total_amount}/g, "0") +'</div><br />';
   if (payNowPayment) {
     if (isQuickConfig) {
       $('#total_amount').closest('div').append($msg);
@@ -46,11 +46,13 @@ CRM.$(function($) {
       pp = $('input[name=payment_processor_id]').val();
     }
     if (typeof pp !== 'undefined' && pp != 0 && totalFee) {
-      totalFee += (totalFee * percent/100 + 0.20);
+      totalFee += (totalFee * percent/100 + processingFee);
     }
     $('#extra_fee_msg').hide();
 
     if (totalFee > totalWithoutTax) {
+      var newhtml = message.replace(/{total_amount}/g, totalFee);
+      $('#extra_fee_msg').text(newhtml);
       $('#extra_fee_msg').show();
     }
     return totalFee;
