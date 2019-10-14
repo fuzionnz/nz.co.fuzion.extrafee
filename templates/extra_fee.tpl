@@ -51,7 +51,7 @@ CRM.$(function($) {
     $('#extra_fee_msg').hide();
 
     if (totalFee > totalWithoutTax) {
-      var newhtml = message.replace(/{total_amount}/g, totalFee);
+      var newhtml = message.replace(/{total_amount}/g, Math.round(totalFee * 100)/100);
       $('#extra_fee_msg').text(newhtml);
       $('#extra_fee_msg').show();
     }

@@ -30,39 +30,26 @@ function extrafee_civicrm_install() {
   _extrafee_civix_civicrm_install();
 }
 
+/**
+ * Implements hook_civicrm_install().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
+ */
 function extrafee_civicrm_buildForm($formName, &$form) {
   if (!in_array($formName, ['CRM_Contribute_Form_Contribution_Main', 'CRM_Event_Form_Registration_Register'])) {
     return;
   }
   $extraFeeSettings = json_decode(Civi::settings()->get('extra_fee_settings'), TRUE);
   if (!empty($extraFeeSettings['percent']) || !empty($extraFeeSettings['processing_fee'])) {
-    $processingFee = CRM_Utils_Array::value('processing_fee', $extraFeeSettings, 0);
-    $percent = CRM_Utils_Array::value('percent', $extraFeeSettings, 0);
-    $form->set('amount', 0);
-    $form->assign('payNowPayment', FALSE);
-    if (!empty($form->_ccid) && !empty($form->_pendingAmount)) {
-      $form->_pendingAmount += $form->_pendingAmount * $percent/100 + $processingFee;
-      $form->assign('pendingAmount', $form->_pendingAmount);
-      $form->assign('payNowPayment', TRUE);
-    }
-    if (!empty($form->_priceSetId)) {
-      $priceSet = civicrm_api3('PriceSet', 'getsingle', [
-        'return' => ["is_quick_config"],
-        'id' => $form->_priceSetId,
-      ]);
-
-      $form->assign('extraFeePercentage', $percent);
-      $form->assign('extraFeeProcessingFee', $processingFee);
-      $form->assign('extraFeeMessage', $extraFeeSettings['message']);
-      $form->assign('is_quick_config', $priceSet['is_quick_config']);
-      $templatePath = realpath(dirname(__FILE__) . "/templates");
-      CRM_Core_Region::instance('page-body')->add(array(
-        'template' => "{$templatePath}/extra_fee.tpl"
-      ));
-    }
+    CRM_Extrafee_Fee::displayFeeMessage($form, $extraFeeSettings);
   }
 }
 
+/**
+ * Implements hook_civicrm_postProcess().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
+ */
 function extrafee_civicrm_postProcess($formName, &$form) {
   if (!in_array($formName, ['CRM_Contribute_Form_Contribution_Main', 'CRM_Event_Form_Registration_Register'])) {
     return;
@@ -70,26 +57,7 @@ function extrafee_civicrm_postProcess($formName, &$form) {
   $extraFeeSettings = json_decode(Civi::settings()->get('extra_fee_settings'), TRUE);
   $ppID = $form->getVar('_paymentProcessorID');
   if ((!empty($extraFeeSettings['percent']) || !empty($extraFeeSettings['processing_fee'])) && !empty($ppID) && empty($form->_ccid)) {
-    $processingFee = CRM_Utils_Array::value('processing_fee', $extraFeeSettings, 0);
-    $percent = CRM_Utils_Array::value('percent', $extraFeeSettings, 0);
-    if ($formName == 'CRM_Contribute_Form_Contribution_Main') {
-      if (!empty($form->_amount)) {
-        $form->_amount += $form->_amount * $percent/100 + $processingFee;
-        $form->set('amount', $form->_amount);
-      }
-      elseif ($amt = $form->get('amount')) {
-        $form->_amount = $amt + $amt * $percent/100 + $processingFee;
-        $form->set('amount', $form->_amount);
-      }
-    }
-    elseif ($formName == 'CRM_Event_Form_Registration_Register') {
-      $params = $form->getVar('_params');
-      if (!empty($params[0]['amount'])) {
-        $params[0]['amount'] += $params[0]['amount'] * $percent/100 + $processingFee;
-        $form->setVar('_params', $params);
-        $form->set('params', $params);
-      }
-    }
+    CRM_Extrafee_Fee::modifyTotalAmountInParams($formName, $form, $extraFeeSettings);
   }
 }
 

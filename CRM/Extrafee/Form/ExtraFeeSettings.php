@@ -17,9 +17,9 @@ class CRM_Extrafee_Form_ExtraFeeSettings extends CRM_Core_Form {
   public function setDefaultValues() {
     $extraFeeSettings = json_decode(Civi::settings()->get('extra_fee_settings'), TRUE);
     $defaults = [
-      'extra_fee_percentage' => $extraFeeSettings['percent'] ?: 1.7,
-      'extra_fee_processing_fee' => $extraFeeSettings['processing_fee'] ?: 0.20,
-      'extra_fee_message' => $extraFeeSettings['message'] ?:'A 1.7% credit card fee and 20c processing fee will apply.',
+      'extra_fee_percentage' => CRM_Utils_Array::value('percent', $extraFeeSettings, 1.7),
+      'extra_fee_processing_fee' => CRM_Utils_Array::value('processing_fee', $extraFeeSettings, 0.20),
+      'extra_fee_message' => CRM_Utils_Array::value('message', $extraFeeSettings, 'A 1.7% credit card fee and 20c processing fee will apply.'),
     ];
     return $defaults;
   }
