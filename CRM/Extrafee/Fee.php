@@ -63,4 +63,29 @@ class CRM_Extrafee_Fee {
     }
   }
 
+  /**
+   * Is the form eligible to calculate / display the extra fee?
+   *
+   * @param \CRM_Core_Form $form
+   * @param array $extraFeeSettings
+   */
+  public static function isFormEligibleForExtraFee($form, $extraFeeSettings) {
+    if (empty($extraFeeSettings['paymentprocessors'])) {
+      // If we didn't set any payment processors we apply to all forms
+      return TRUE;
+    }
+    $activeProcessors = $form->getVar('_paymentProcessors');
+    if (empty($activeProcessors)) {
+      // No payment processors on the form or missing variable - we'll leave active for now.
+      return TRUE;
+    }
+    foreach ($activeProcessors as $paymentProcessorID => $detail) {
+      if (in_array($paymentProcessorID, $extraFeeSettings['paymentprocessors'])) {
+        // We have matched on one of the processors we are enabled for
+        return TRUE;
+      }
+    }
+    return FALSE;
+  }
+
 }

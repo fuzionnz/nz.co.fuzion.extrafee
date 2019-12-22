@@ -45,8 +45,15 @@ cv en extrafee
 ## Usage
 
 - Install the extension.
-- Navigate to "Administer >> CiviContribute >> Extrafee Settings" or /civicrm/extrafeesettings URL to set the percentage, optional 'processing fee' and message that needs to be applied on the total amount.
-- Load any live contribution page or the event registration page. Currently, the additional fee will be applied to all the processors except Pay Later.
+- Navigate to "Administer >> CiviContribute >> Extrafee Settings" or /civicrm/extrafeesettings URL to set:
+  - Percentage.
+  - Optional 'processing fee'.
+  - Message that needs to be applied on the total amount.
+  - Optionally limit extra fee to pages which have specific payment processors.
+- Load any live contribution page or the event registration page.
+
+Currently, the additional fee will be applied to all the processors on the page except Pay Later.
+If you specify the list of payment processors the extra fee will only be active on pages which have one or more of those processors enabled.
 
 ## Other solutions
 
