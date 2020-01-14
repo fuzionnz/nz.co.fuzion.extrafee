@@ -13,6 +13,9 @@
     {if $elementName EQ 'extra_fee_message'}
       <div class='content description'>Insert {literal}{total_amount}{/literal} token in the above field to display the calculated amount in the message.</div>
     {/if}
+    {if $elementName EQ 'extra_fee_paymentprocessors'}
+      <div class='content description'>If you enable this for a payment processor then the Extra Fee will apply to all payment processors that are enabled on the same contribution/event page. Leave blank to apply to all contribution/event pages.</div>
+    {/if}
     <div class="clear"></div>
   </div>
 {/foreach}

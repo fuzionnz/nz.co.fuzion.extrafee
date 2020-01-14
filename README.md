@@ -2,7 +2,9 @@
 
 This extension allows for a credit card fee and optional processing fee for the CC payment to be added to the total to be paid via any payment processor that uses Credit Cards or other payment gateways. It does not get applied for Pay Later transactions.
 
-The extension provides a configurable 
+![Screenshot](/images/example.png)
+
+The extension provides a configurable
 - percentage field
 - an optional Processing charge field
 - a message field that will display below the Contribution amount.
@@ -15,38 +17,25 @@ The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
 ## Requirements
 
-* PHP v5.4+
-* CiviCRM (*FIXME: Version number*)
+* PHP v7.1+
+* CiviCRM 5.19+
 
-## Installation (Web UI)
+## Installation
 
-This extension has not yet been published for installation via the web UI.
-
-## Installation (CLI, Zip)
-
-Sysadmins and developers may download the `.zip` file for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
-
-```bash
-cd <extension-dir>
-cv dl nz.co.fuzion.extrafee@https://github.com/fuzionnz/nz.co.fuzion.extrafee/archive/master.zip
-```
-
-## Installation (CLI, Git)
-
-Sysadmins and developers may clone the [Git](https://en.wikipedia.org/wiki/Git) repo for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
-
-```bash
-git clone https://github.com/fuzionnz/nz.co.fuzion.extrafee.git
-cv en extrafee
-```
+See: https://docs.civicrm.org/sysadmin/en/latest/customize/extensions/#installing-a-new-extension
 
 ## Usage
 
 - Install the extension.
-- Navigate to "Administer >> CiviContribute >> Extrafee Settings" or /civicrm/extrafeesettings URL to set the percentage, optional 'processing fee' and message that needs to be applied on the total amount.
-- Load any live contribution page or the event registration page. Currently, the additional fee will be applied to all the processors except Pay Later.
+- Navigate to "Administer >> CiviContribute >> Extrafee Settings" or /civicrm/extrafeesettings URL to set:
+  - Percentage.
+  - Optional 'processing fee'.
+  - Message that needs to be applied on the total amount.
+  - Optionally limit extra fee to pages which have specific payment processors.
+- Load any live contribution page or the event registration page.
+
+Currently, the additional fee will be applied to all the processors on the page except Pay Later.
+If you specify the list of payment processors the extra fee will only be active on pages which have one or more of those processors enabled.
 
 ## Other solutions
 

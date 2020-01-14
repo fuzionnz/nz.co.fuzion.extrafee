@@ -20,6 +20,7 @@ class CRM_Extrafee_Form_ExtraFeeSettings extends CRM_Core_Form {
       'extra_fee_percentage' => CRM_Utils_Array::value('percent', $extraFeeSettings, 1.7),
       'extra_fee_processing_fee' => CRM_Utils_Array::value('processing_fee', $extraFeeSettings, 0.20),
       'extra_fee_message' => CRM_Utils_Array::value('message', $extraFeeSettings, 'A 1.7% credit card fee and 20c processing fee will apply.'),
+      'extra_fee_paymentprocessors' => CRM_Utils_Array::value('paymentprocessors', $extraFeeSettings, []),
     ];
     return $defaults;
   }
@@ -31,6 +32,13 @@ class CRM_Extrafee_Form_ExtraFeeSettings extends CRM_Core_Form {
 
     // add description
     $this->add('textarea', 'extra_fee_message', ts('Message'), 'rows=3 cols=45');
+
+    $this->add('select', 'extra_fee_paymentprocessors', ts('Enable for payment processors'), self::getPaymentProcessors(), FALSE, [
+      'class' => 'crm-select2 huge',
+      'placeholder' => ts('- select -'),
+      'multiple' => TRUE,
+    ]);
+
     $this->addButtons(array(
       array(
         'type' => 'submit',
@@ -50,6 +58,7 @@ class CRM_Extrafee_Form_ExtraFeeSettings extends CRM_Core_Form {
       'percent' => CRM_Utils_Array::value('extra_fee_percentage', $values),
       'processing_fee' => CRM_Utils_Array::value('extra_fee_processing_fee', $values),
       'message' => CRM_Utils_Array::value('extra_fee_message', $values),
+      'paymentprocessors' => CRM_Utils_Array::value('extra_fee_paymentprocessors', $values),
     ];
     Civi::settings()->set('extra_fee_settings', json_encode($extraFeeSettings));
     CRM_Core_Session::setStatus(E::ts('You settings are saved.'), 'Success', 'success');
@@ -75,6 +84,30 @@ class CRM_Extrafee_Form_ExtraFeeSettings extends CRM_Core_Form {
       }
     }
     return $elementNames;
+  }
+
+  /**
+   * Get payment processors.
+   *
+   * This differs from the option value in that we append description for disambiguation.
+   *
+   * @return array
+   * @throws \CiviCRM_API3_Exception
+   */
+  public static function getPaymentProcessors(): array {
+    $results = civicrm_api3('PaymentProcessor', 'get', [
+      'is_test' => ['IN' => [0, 1]],
+      'return' => ['id', 'name', 'description', 'domain_id', 'is_test'],
+    ]);
+
+    $processors = [];
+    foreach ($results['values'] as $processorID => $details) {
+      $processors[$processorID] = ($details['is_test'] ? CRM_Core_TestEntity::appendTestText($details['name']) : $details['name']);
+      if (!empty($details['description'])) {
+        $processors[$processorID] .= ' : ' . $details['description'];
+      }
+    }
+    return $processors;
   }
 
 }

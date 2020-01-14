@@ -32,10 +32,9 @@ class CRM_Extrafee_Fee {
       $form->assign('extraFeeProcessingFee', $processingFee);
       $form->assign('extraFeeMessage', $extraFeeSettings['message']);
       $form->assign('is_quick_config', $priceSet['is_quick_config']);
-      $templatePath = realpath(dirname(__FILE__) . "/../../templates");
-      CRM_Core_Region::instance('page-body')->add(array(
-        'template' => "{$templatePath}/extra_fee.tpl"
-      ));
+      CRM_Core_Region::instance('page-body')->add([
+        'template' => CRM_Extrafee_ExtensionUtil::path('templates/extra_fee.tpl')
+      ]);
     }
   }
   /**
@@ -62,6 +61,31 @@ class CRM_Extrafee_Fee {
         $form->set('params', $params);
       }
     }
+  }
+
+  /**
+   * Is the form eligible to calculate / display the extra fee?
+   *
+   * @param \CRM_Core_Form $form
+   * @param array $extraFeeSettings
+   */
+  public static function isFormEligibleForExtraFee($form, $extraFeeSettings) {
+    if (empty($extraFeeSettings['paymentprocessors'])) {
+      // If we didn't set any payment processors we apply to all forms
+      return TRUE;
+    }
+    $activeProcessors = $form->getVar('_paymentProcessors');
+    if (empty($activeProcessors)) {
+      // No payment processors on the form or missing variable - we'll leave active for now.
+      return TRUE;
+    }
+    foreach ($activeProcessors as $paymentProcessorID => $detail) {
+      if (in_array($paymentProcessorID, $extraFeeSettings['paymentprocessors'])) {
+        // We have matched on one of the processors we are enabled for
+        return TRUE;
+      }
+    }
+    return FALSE;
   }
 
 }

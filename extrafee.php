@@ -40,6 +40,9 @@ function extrafee_civicrm_buildForm($formName, &$form) {
     return;
   }
   $extraFeeSettings = json_decode(Civi::settings()->get('extra_fee_settings'), TRUE);
+  if (!CRM_Extrafee_Fee::isFormEligibleForExtraFee($form, $extraFeeSettings)) {
+    return;
+  }
   if (!empty($extraFeeSettings['percent']) || !empty($extraFeeSettings['processing_fee'])) {
     CRM_Extrafee_Fee::displayFeeMessage($form, $extraFeeSettings);
   }
@@ -55,6 +58,9 @@ function extrafee_civicrm_postProcess($formName, &$form) {
     return;
   }
   $extraFeeSettings = json_decode(Civi::settings()->get('extra_fee_settings'), TRUE);
+  if (!CRM_Extrafee_Fee::isFormEligibleForExtraFee($form, $extraFeeSettings)) {
+    return;
+  }
   $ppID = $form->getVar('_paymentProcessorID');
   if ((!empty($extraFeeSettings['percent']) || !empty($extraFeeSettings['processing_fee'])) && !empty($ppID) && empty($form->_ccid)) {
     CRM_Extrafee_Fee::modifyTotalAmountInParams($formName, $form, $extraFeeSettings);
@@ -164,17 +170,6 @@ function extrafee_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 function extrafee_civicrm_entityTypes(&$entityTypes) {
   _extrafee_civix_civicrm_entityTypes($entityTypes);
 }
-
-// --- Functions below this ship commented out. Uncomment as required. ---
-
-/**
- * Implements hook_civicrm_preProcess().
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_preProcess
- *
-function extrafee_civicrm_preProcess($formName, &$form) {
-
-} // */
 
 /**
  * Implements hook_civicrm_navigationMenu().
