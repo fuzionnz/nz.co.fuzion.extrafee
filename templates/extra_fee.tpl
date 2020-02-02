@@ -6,7 +6,11 @@ CRM.$(function($) {
   var percent = {/literal} {if $extraFeePercentage} {$extraFeePercentage} {else} 0 {/if}{literal};
   var processingFee = {/literal} {if $extraFeeProcessingFee} {$extraFeeProcessingFee} {else} 0 {/if}{literal};
   var message = {/literal} {if $extraFeeMessage} '{$extraFeeMessage}' {else} '' {/if}{literal};
-  $msg = '<div class="content" id="extra_fee_msg">'+ message.replace(/{total_amount}/g, "0") +'</div><br />';
+  {/literal}{if $extraFeeOptional}{literal}
+    $msg = '<div class="content" id="extra_fee_checkbox">{/literal}{$form.extra_fee_add.html} {$form.extra_fee_add.label}{literal}</div><br />';
+  {/literal}{else}{literal}
+    $msg = '<div class="content" id="extra_fee_msg">'+ message.replace(/{total_amount}/g, "0") +'</div><br />';
+  {/literal}{/if}{literal}
   if (payNowPayment) {
     if (isQuickConfig) {
       $('#total_amount').closest('div').append($msg);
@@ -21,6 +25,8 @@ CRM.$(function($) {
   else {
     $('#pricesetTotal').append($msg);
   }
+
+  $('input#extra_fee_add').on('change', function() { displayTotalAmount(calculateTotalFee()); });
 
   function displayTotalAmount(totalfee) {
     totalfee = Math.round(totalfee*100)/100;
@@ -41,12 +47,20 @@ CRM.$(function($) {
     });
     totalWithoutTax = totalFee;
 
+    var extraFeeCheckbox = $('input#extra_fee_add');
+    var addExtraFee = true;
+    if ((extraFeeCheckbox.length !== 0) && (!extraFeeCheckbox.prop('checked'))) {
+      addExtraFee = false;
+    }
+
     var pp = $('input[name=payment_processor_id]:checked').val();
     if (typeof pp === 'undefined') {
       pp = $('input[name=payment_processor_id]').val();
     }
     if (typeof pp !== 'undefined' && pp != 0 && totalFee) {
-      totalFee += (totalFee * percent/100 + processingFee);
+      if (addExtraFee) {
+        totalFee += (totalFee * percent / 100 + processingFee);
+      }
     }
     $('#extra_fee_msg').hide();
 

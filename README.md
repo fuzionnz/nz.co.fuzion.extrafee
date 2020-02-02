@@ -32,6 +32,7 @@ See: https://docs.civicrm.org/sysadmin/en/latest/customize/extensions/#installin
   - Optional 'processing fee'.
   - Message that needs to be applied on the total amount.
   - Optionally limit extra fee to pages which have specific payment processors.
+  - Optionally allow the user to select if they want to pay the extra fee.
 - Load any live contribution page or the event registration page.
 
 Currently, the additional fee will be applied to all the processors on the page except Pay Later.

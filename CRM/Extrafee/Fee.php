@@ -31,16 +31,26 @@ class CRM_Extrafee_Fee {
       $form->assign('extraFeePercentage', $percent);
       $form->assign('extraFeeProcessingFee', $processingFee);
       $form->assign('extraFeeMessage', $extraFeeSettings['message']);
+      $form->assign('extraFeeOptional', $extraFeeSettings['optional']);
       $form->assign('is_quick_config', $priceSet['is_quick_config']);
       CRM_Core_Region::instance('page-body')->add([
         'template' => CRM_Extrafee_ExtensionUtil::path('templates/extra_fee.tpl')
       ]);
     }
   }
+
+  public static function addOptionalFeeCheckbox($form, $extraFeeSettings) {
+    $message = $extraFeeSettings['message'];
+    $form->add('checkbox', 'extra_fee_add', $message);
+  }
+
   /**
    *  Add % fee in submitted params.
    */
   public static function modifyTotalAmountInParams($formName, &$form, $extraFeeSettings) {
+    if (!empty($extraFeeSettings['optional']) && !CRM_Utils_Request::retrieveValue('extra_fee_add', 'String')) {
+      return;
+    }
     $processingFee = CRM_Utils_Array::value('processing_fee', $extraFeeSettings, 0);
     $percent = CRM_Utils_Array::value('percent', $extraFeeSettings, 0);
     if ($formName == 'CRM_Contribute_Form_Contribution_Main') {
