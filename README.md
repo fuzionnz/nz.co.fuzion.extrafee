@@ -2,12 +2,16 @@
 
 This extension allows for a credit card fee and optional processing fee for the CC payment to be added to the total to be paid via any payment processor that uses Credit Cards or other payment gateways. It does not get applied for Pay Later transactions.
 
-![Screenshot](/images/example.png)
+![Screenshot](images/example.png)
 
 The extension provides a configurable
 - percentage field
 - an optional Processing charge field
 - a message field that will display below the Contribution amount.
+
+The extra fee can also be configured to be selectable by the user:
+
+![Screenshot of optional extra fee](images/example_optional.png)
 
 It calculates the extra amount to be paid for Contribution and Event pages whether they are using Price Sets or Price options. It applies to all payment pages across the site.
 
