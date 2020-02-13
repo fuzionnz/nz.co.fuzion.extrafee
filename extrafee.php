@@ -45,6 +45,7 @@ function extrafee_civicrm_buildForm($formName, &$form) {
   }
   if (!empty($extraFeeSettings['percent']) || !empty($extraFeeSettings['processing_fee'])) {
     CRM_Extrafee_Fee::displayFeeMessage($form, $extraFeeSettings);
+    CRM_Extrafee_Fee::addOptionalFeeCheckbox($form, $extraFeeSettings);
   }
 }
 
