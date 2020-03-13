@@ -60,7 +60,7 @@ class CRM_Extrafee_Form_ExtraFeeSettings extends CRM_Core_Form {
     $extraFeeSettings = [
       'percent' => CRM_Utils_Array::value('extra_fee_percentage', $values),
       'processing_fee' => CRM_Utils_Array::value('extra_fee_processing_fee', $values),
-      'message' => CRM_Utils_Array::value('extra_fee_message', $values),
+      'message' => addslashes(CRM_Utils_Array::value('extra_fee_message', $values)),
       'paymentprocessors' => CRM_Utils_Array::value('extra_fee_paymentprocessors', $values),
       'optional' => CRM_Utils_Array::value('extra_fee_optional', $values),
     ];
