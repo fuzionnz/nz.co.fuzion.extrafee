@@ -9,7 +9,7 @@ use CRM_Extrafee_ExtensionUtil as E;
  */
 class CRM_Extrafee_Form_ExtraFeeSettings extends CRM_Core_Form {
 
-    /**
+  /**
    * Set default values for the form.
    *
    * Note that in edit/view mode the default values are retrieved from the database

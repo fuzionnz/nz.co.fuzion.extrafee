@@ -30,7 +30,7 @@ CRM.$(function($) {
 
   function displayTotalAmount(totalfee) {
     totalfee = Math.round(totalfee*100)/100;
-    var totalEventFee  = formatMoney( totalfee, 2, separator, thousandMarker);
+    var totalEventFee  = formatExtraFee( totalfee, 2, separator, thousandMarker);
     document.getElementById('pricevalue').innerHTML = "<b>"+symbol+"</b> "+totalEventFee;
 
     $('#total_amount').val( totalfee );
@@ -38,6 +38,16 @@ CRM.$(function($) {
 
     ( totalfee < 0 ) ? $('table#pricelabel').addClass('disabled') : $('table#pricelabel').removeClass('disabled');
   }
+
+  function formatExtraFee(amount, c, d, t){
+    var n = amount,
+      c = isNaN(c = Math.abs(c)) ? 2 : c,
+      d = d == undefined ? "," : d,
+      t = t == undefined ? "." : t, s = n < 0 ? "-" : "",
+      i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
+      j = (j = i.length) > 3 ? j % 3 : 0;
+    return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+  };
 
   var origcalculateTotalFee = window.calculateTotalFee;
   window.calculateTotalFee = function(argument) {
