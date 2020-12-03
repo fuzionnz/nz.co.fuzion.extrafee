@@ -6,6 +6,10 @@ CRM.$(function($) {
   var percent = {/literal} {if $extraFeePercentage} {$extraFeePercentage} {else} 0 {/if}{literal};
   var processingFee = {/literal} {if $extraFeeProcessingFee} {$extraFeeProcessingFee} {else} 0 {/if}{literal};
   var message = {/literal} {if $extraFeeMessage} '{$extraFeeMessage}' {else} '' {/if}{literal};
+  var thousandMarker = '{/literal}{$config->monetaryThousandSeparator}{literal}';
+  var separator      = '{/literal}{$config->monetaryDecimalPoint}{literal}';
+  var symbol         = '{/literal}{$currencySymbol}{literal}';
+
   {/literal}{if $extraFeeOptional}{literal}
     $msg = '<div class="content" id="extra_fee_checkbox">{/literal}{$form.extra_fee_add.html} {$form.extra_fee_add.label}{literal}</div><br />';
   {/literal}{else}{literal}
@@ -31,7 +35,7 @@ CRM.$(function($) {
   function displayTotalAmount(totalfee) {
     totalfee = Math.round(totalfee*100)/100;
     var totalEventFee  = formatExtraFee( totalfee, 2, separator, thousandMarker);
-    document.getElementById('pricevalue').innerHTML = "<b>"+symbol+"</b> "+totalEventFee;
+    $('#pricevalue').innerHTML = "<b>" + symbol + "</b> " + totalEventFee;
 
     $('#total_amount').val( totalfee );
     $('#pricevalue').data('raw-total', totalfee).trigger('change');
@@ -79,7 +83,7 @@ CRM.$(function($) {
       $('#extra_fee_msg').text(newhtml);
       $('#extra_fee_msg').show();
     }
-    return totalFee;
+    return Math.round(totalFee * 100)/100;
   }
   if (!payNowPayment) {
     displayTotalAmount(calculateTotalFee());
