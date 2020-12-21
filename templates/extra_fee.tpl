@@ -40,7 +40,7 @@ CRM.$(function($) {
     $('#total_amount').val( totalfee );
     $('#pricevalue').data('raw-total', totalfee).trigger('change');
 
-    ( totalfee < 0 ) ? $('table#pricelabel').addClass('disabled') : $('table#pricelabel').removeClass('disabled');
+    ( totalfee < 0 ) ? $('#pricelabel, #pricevalue').hide() : $('#pricelabel, #pricevalue').show();
   }
 
   function formatExtraFee(amount, c, d, t){
