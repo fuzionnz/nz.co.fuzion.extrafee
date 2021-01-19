@@ -22,6 +22,7 @@ class CRM_Extrafee_Form_ExtraFeeSettings extends CRM_Core_Form {
       'extra_fee_message' => CRM_Utils_Array::value('message', $extraFeeSettings, 'A 1.7% credit card fee and 20c processing fee will apply.'),
       'extra_fee_paymentprocessors' => CRM_Utils_Array::value('paymentprocessors', $extraFeeSettings, []),
       'extra_fee_optional' => CRM_Utils_Array::value('optional', $extraFeeSettings, FALSE),
+      'extra_fee_label' => CRM_Utils_Array::value('label', $extraFeeSettings, 'Include Extra Fee?'),
     ];
     return $defaults;
   }
@@ -41,6 +42,7 @@ class CRM_Extrafee_Form_ExtraFeeSettings extends CRM_Core_Form {
     ]);
 
     $this->add('advcheckbox', 'extra_fee_optional', ts('Extra fee is optional'));
+    $this->add('text', 'extra_fee_label', ts('Label'));
 
     $this->addButtons(array(
       array(
@@ -58,11 +60,12 @@ class CRM_Extrafee_Form_ExtraFeeSettings extends CRM_Core_Form {
   public function postProcess() {
     $values = $this->exportValues();
     $extraFeeSettings = [
-      'percent' => CRM_Utils_Array::value('extra_fee_percentage', $values),
-      'processing_fee' => CRM_Utils_Array::value('extra_fee_processing_fee', $values),
-      'message' => addslashes(CRM_Utils_Array::value('extra_fee_message', $values)),
-      'paymentprocessors' => CRM_Utils_Array::value('extra_fee_paymentprocessors', $values),
-      'optional' => CRM_Utils_Array::value('extra_fee_optional', $values),
+      'percent' => $values['extra_fee_percentage'] ?? NULL,
+      'processing_fee' => $values['extra_fee_percentage'] ?? NULL,
+      'message' => addslashes($values['extra_fee_message']),
+      'paymentprocessors' => $values['extra_fee_paymentprocessors'] ?? NULL,
+      'optional' => $values['extra_fee_optional'] ?? NULL,
+      'label' => $values['extra_fee_label'] ?? NULL,
     ];
     Civi::settings()->set('extra_fee_settings', json_encode($extraFeeSettings));
     CRM_Core_Session::setStatus(E::ts('You settings are saved.'), 'Success', 'success');

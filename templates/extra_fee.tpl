@@ -9,25 +9,29 @@ CRM.$(function($) {
   var thousandMarker = '{/literal}{$config->monetaryThousandSeparator}{literal}';
   var separator      = '{/literal}{$config->monetaryDecimalPoint}{literal}';
   var symbol         = '{/literal}{$currencySymbol}{literal}';
+  var optional_input = msg = '';
 
-  {/literal}{if $extraFeeOptional}{literal}
-    $msg = '<div class="content" id="extra_fee_checkbox">{/literal}{$form.extra_fee_add.html} {$form.extra_fee_add.label}{literal}</div><br />';
-  {/literal}{else}{literal}
-    $msg = '<div class="content" id="extra_fee_msg">'+ message.replace(/{total_amount}/g, "0") +'</div><br />';
-  {/literal}{/if}{literal}
+  {/literal}
+    {if $extraFeeOptional}
+      {literal}
+        optional_input = '<div class="content" id="extra_fee_checkbox">{/literal}{$form.extra_fee_add.html} {$form.extra_fee_add.label}{literal}</div><br />';
+      {/literal}
+    {/if}
+  {literal}
+  msg = '<div class="content" id="extra_fee_msg">'+ message.replace(/{total_amount}/g, "0") +'</div><br />';
   if (payNowPayment) {
     if (isQuickConfig) {
-      $('#total_amount').closest('div').append($msg);
+      $('#total_amount').closest('div').append(optional_input + msg);
     }
     else {
-      $('.total_amount-section').append($msg);
+      $('.total_amount-section').append(optional_input + msg);
     }
   }
   else if (isQuickConfig) {
-    $('#priceset').append($msg);
+    $('#priceset').append(optional_input + msg);
   }
   else {
-    $('#pricesetTotal').append($msg);
+    $('#pricesetTotal').append(optional_input + msg);
   }
 
   $('input#extra_fee_add').on('change', function() { displayTotalAmount(calculateTotalFee()); });
