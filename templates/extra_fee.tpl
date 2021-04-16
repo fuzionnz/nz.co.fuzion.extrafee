@@ -32,8 +32,18 @@ CRM.$(function($) {
 
   $('input#extra_fee_add').on('change', function() { displayTotalAmount(calculateTotalFee()); });
 
+  /*
+   * Thanks: https://stackoverflow.com/a/59268677/11400326
+   */
+  function roundNumber(num) {
+    // Return a number the is rounded and two decimals. Ensure a "5" is rounded up
+    // rather then down (which varies depending on the browser). For more info, see:
+    // https://stackoverflow.com/questions/10015027/javascript-tofixed-not-rounding
+    precision = 2;
+    return (+(Math.round(+(num + 'e' + precision)) + 'e' + -precision)).toFixed(precision);
+  }
   function displayTotalAmount(totalfee) {
-    totalfee = Math.round(totalfee*100)/100;
+    totalfee = roundNumber(totalfee);
     var totalEventFee  = formatExtraFee( totalfee, 2, separator, thousandMarker);
     $('#pricevalue').innerHTML = "<b>" + symbol + "</b> " + totalEventFee;
 
@@ -79,11 +89,12 @@ CRM.$(function($) {
     $('#extra_fee_msg').hide();
 
     if (totalFee > totalWithoutTax) {
-      var newhtml = message.replace(/{total_amount}/g, Math.round(totalFee * 100)/100);
+      var newhtml = message.replace(/{total_amount}/g, roundNumber(totalFee));
       $('#extra_fee_msg').text(newhtml);
       $('#extra_fee_msg').show();
     }
-    return Math.round(totalFee * 100)/100;
+
+    return roundNumber(totalFee);
   }
   if (!payNowPayment) {
     displayTotalAmount(calculateTotalFee());
