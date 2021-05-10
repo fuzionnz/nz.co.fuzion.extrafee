@@ -39,7 +39,7 @@ CRM.$(function($) {
   function displayTotalAmount(totalfee) {
     totalfee = Math.round(totalfee*100)/100;
     var totalEventFee  = formatExtraFee( totalfee, 2, separator, thousandMarker);
-    $('#pricevalue').innerHTML = "<b>" + symbol + "</b> " + totalEventFee;
+    $('#pricevalue')[0].innerHTML = "<b>" + symbol + "</b> " + totalEventFee;
 
     $('#total_amount').val( totalfee );
     $('#pricevalue').data('raw-total', totalfee).trigger('change');
