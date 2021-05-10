@@ -61,7 +61,7 @@ class CRM_Extrafee_Form_ExtraFeeSettings extends CRM_Core_Form {
     $values = $this->exportValues();
     $extraFeeSettings = [
       'percent' => $values['extra_fee_percentage'] ?? NULL,
-      'processing_fee' => $values['extra_fee_percentage'] ?? NULL,
+      'processing_fee' => $values['extra_fee_processing_fee'] ?? NULL,
       'message' => addslashes($values['extra_fee_message']),
       'paymentprocessors' => $values['extra_fee_paymentprocessors'] ?? NULL,
       'optional' => $values['extra_fee_optional'] ?? NULL,

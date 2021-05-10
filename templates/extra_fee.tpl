@@ -1,7 +1,7 @@
 {literal}
 <script>
 CRM.$(function($) {
-  var isQuickConfig = {/literal}{$is_quick_config}{literal};
+  var isQuickConfig = {/literal}{$quick_config_display}{literal};
   var payNowPayment = {/literal} {if $payNowPayment} {$payNowPayment} {else} 0 {/if}{literal};
   var percent = {/literal} {if $extraFeePercentage} {$extraFeePercentage} {else} 0 {/if}{literal};
   var processingFee = {/literal} {if $extraFeeProcessingFee} {$extraFeeProcessingFee} {else} 0 {/if}{literal};
@@ -39,7 +39,8 @@ CRM.$(function($) {
   function displayTotalAmount(totalfee) {
     totalfee = Math.round(totalfee*100)/100;
     var totalEventFee  = formatExtraFee( totalfee, 2, separator, thousandMarker);
-    $('#pricevalue').innerHTML = "<b>" + symbol + "</b> " + totalEventFee;
+    var pricevalue = "<b>" + symbol + "</b> " + totalEventFee;
+    $('#pricevalue').html(pricevalue);
 
     $('#total_amount').val( totalfee );
     $('#pricevalue').data('raw-total', totalfee).trigger('change');
@@ -89,6 +90,7 @@ CRM.$(function($) {
     }
     return Math.round(totalFee * 100)/100;
   }
+
   if (!payNowPayment) {
     displayTotalAmount(calculateTotalFee());
   }

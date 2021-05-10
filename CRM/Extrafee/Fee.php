@@ -32,7 +32,7 @@ class CRM_Extrafee_Fee {
       $form->assign('extraFeeProcessingFee', $processingFee);
       $form->assign('extraFeeMessage', $extraFeeSettings['message']);
       $form->assign('extraFeeOptional', $extraFeeSettings['optional']);
-      $form->assign('is_quick_config', $priceSet['is_quick_config']);
+      $form->assign('quick_config_display', $priceSet['is_quick_config']);
       CRM_Core_Region::instance('page-body')->add([
         'template' => CRM_Extrafee_ExtensionUtil::path('templates/extra_fee.tpl')
       ]);
