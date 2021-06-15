@@ -33,7 +33,7 @@ class CRM_Extrafee_Form_ExtraFeeSettings extends CRM_Core_Form {
     $this->add('text', 'extra_fee_processing_fee', ts('Processing Fee (Amount in Dollars)'));
 
     // add description
-    $this->add('textarea', 'extra_fee_message', ts('Message'), 'rows=3 cols=45');
+    $this->add('textarea', 'extra_fee_message', ts('Message'), ['rows' => 3, 'cols' => 45]);
 
     $this->add('select', 'extra_fee_paymentprocessors', ts('Enable for payment processors'), self::getPaymentProcessors(), FALSE, [
       'class' => 'crm-select2 huge',
