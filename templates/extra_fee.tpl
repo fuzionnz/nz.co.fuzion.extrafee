@@ -1,10 +1,11 @@
 {literal}
 <script>
 CRM.$(function($) {
+  var processor_extrafee = {/literal} {if $processor_extra_fee_values} {$processor_extra_fee_values} {else} 0 {/if}{literal};
+  var extra_fee_settings = {/literal} {if $extra_fee_settings} {$extra_fee_settings} {else} 0 {/if}{literal};
+
   var isQuickConfig = {/literal}{$quick_config_display}{literal};
   var payNowPayment = {/literal} {if $payNowPayment} {$payNowPayment} {else} 0 {/if}{literal};
-  var percent = {/literal} {if $extraFeePercentage} {$extraFeePercentage} {else} 0 {/if}{literal};
-  var processingFee = {/literal} {if $extraFeeProcessingFee} {$extraFeeProcessingFee} {else} 0 {/if}{literal};
   var message = {/literal} {if $extraFeeMessage} '{$extraFeeMessage}' {else} '' {/if}{literal};
   var thousandMarker = '{/literal}{$config->monetaryThousandSeparator}{literal}';
   var separator      = '{/literal}{$config->monetaryDecimalPoint}{literal}';
@@ -46,6 +47,7 @@ CRM.$(function($) {
     precision = 2;
     return (+(Math.round(+(num + 'e' + precision)) + 'e' + -precision)).toFixed(precision);
   }
+
   function displayTotalAmount(totalfee) {
     totalfee = roundNumber(totalfee);
     var totalEventFee  = formatExtraFee( totalfee, 2, separator, thousandMarker);
@@ -88,7 +90,18 @@ CRM.$(function($) {
     }
     if (typeof pp !== 'undefined' && pp != 0 && totalFee) {
       if (addExtraFee) {
-        totalFee += (totalFee * percent / 100 + processingFee);
+        if (processor_extrafee !== null && typeof processor_extrafee[pp] !== 'undefined') {
+          percent = processor_extrafee[pp]['percent'];
+          processingFee = processor_extrafee[pp]['processing_fee'];
+          message = processor_extrafee[pp]['message'];
+        }
+        else if (typeof extra_fee_settings !== 'undefined') {
+          percent = extra_fee_settings['percent'];
+          processingFee = extra_fee_settings['processing_fee'];
+          message = extra_fee_settings['message'];
+        }
+        processingFee = parseFloat(processingFee) || 0;
+        totalFee += (parseFloat(totalFee) * parseFloat(percent) / 100 + processingFee);
       }
     }
     $('#extra_fee_msg').hide();

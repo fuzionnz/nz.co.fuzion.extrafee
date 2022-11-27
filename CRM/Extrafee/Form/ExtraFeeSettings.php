@@ -68,7 +68,7 @@ class CRM_Extrafee_Form_ExtraFeeSettings extends CRM_Core_Form {
       'label' => $values['extra_fee_label'] ?? NULL,
     ];
     Civi::settings()->set('extra_fee_settings', json_encode($extraFeeSettings));
-    CRM_Core_Session::setStatus(E::ts('You settings are saved.'), 'Success', 'success');
+    CRM_Core_Session::setStatus(E::ts('Your settings are saved.'), 'Success', 'success');
     parent::postProcess();
   }
 
