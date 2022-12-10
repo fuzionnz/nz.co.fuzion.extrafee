@@ -50,7 +50,7 @@ class CRM_Extrafee_Fee {
     if (!empty($extraFeeSettings['optional']) && !CRM_Utils_Request::retrieveValue('extra_fee_add', 'String')) {
       return;
     }
-    $processingFee = (int) CRM_Utils_Array::value('processing_fee', $extraFeeSettings, 0);
+    $processingFee = (float) CRM_Utils_Array::value('processing_fee', $extraFeeSettings, 0);
     $percent = CRM_Utils_Array::value('percent', $extraFeeSettings, 0);
     if ($formName == 'CRM_Contribute_Form_Contribution_Main') {
       if (!empty($form->_amount)) {
