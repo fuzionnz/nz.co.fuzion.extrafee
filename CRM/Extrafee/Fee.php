@@ -120,7 +120,7 @@ class CRM_Extrafee_Fee {
   public static function getProcessorExtraFees() {
     $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings'), TRUE);
     foreach ($ppExtraFeeSettings as $ppID => $pp) {
-      if (empty($pp['percent'])) {
+      if (empty($pp['percent']) && empty($pp['processing_fee'])) {
         unset($ppExtraFeeSettings[$ppID]);
       }
     }

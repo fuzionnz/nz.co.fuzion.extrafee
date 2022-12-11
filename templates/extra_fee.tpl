@@ -100,6 +100,7 @@ CRM.$(function($) {
           processingFee = extra_fee_settings['processing_fee'];
           message = extra_fee_settings['message'];
         }
+        percent = parseFloat(percent) || 0;
         processingFee = parseFloat(processingFee) || 0;
         totalFee += (parseFloat(totalFee) * parseFloat(percent) / 100 + processingFee);
       }
