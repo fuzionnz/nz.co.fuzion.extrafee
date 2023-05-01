@@ -41,7 +41,7 @@ class CRM_Extrafee_Fee {
   }
 
   public static function addOptionalFeeCheckbox($form, $extraFeeSettings) {
-    $form->add('checkbox', 'extra_fee_add', $extraFeeSettings['label']);
+    return $form->add('checkbox', 'extra_fee_add', $extraFeeSettings['label']);
   }
 
   /**
