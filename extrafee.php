@@ -73,6 +73,10 @@ function extrafee_civicrm_buildForm($formName, &$form) {
     $params = $form->getVar('_params');
     if ($formName == 'CRM_Event_Form_Registration_AdditionalParticipant' && !empty($params[0]['payment_processor_id'])) {
       $form->assign('selected_payment_processor', $params[0]['payment_processor_id']);
+      if (!empty($params[0]['extra_fee_add'])) {
+        $defaults['extra_fee_add'] = 1;
+        $form->setDefaults($defaults);
+      }
     }
     CRM_Extrafee_Fee::displayFeeMessage($form, $extraFeeSettings);
     CRM_Extrafee_Fee::addOptionalFeeCheckbox($form, $extraFeeSettings);
