@@ -41,7 +41,7 @@ class CRM_Extrafee_Fee {
   }
 
   public static function addOptionalFeeCheckbox($form, $extraFeeSettings) {
-    $form->add('checkbox', 'extra_fee_add', $extraFeeSettings['label']);
+    return $form->add('checkbox', 'extra_fee_add', $extraFeeSettings['label']);
   }
 
   /**
@@ -73,14 +73,15 @@ class CRM_Extrafee_Fee {
         $form->set('amount', $form->_amount);
       }
     }
-    elseif ($formName == 'CRM_Event_Form_Registration_Register') {
+    elseif ($formName == 'CRM_Event_Form_Registration_Register' || $formName == 'CRM_Event_Form_Registration_AdditionalParticipant') {
       $params = $form->getVar('_params');
-      if (!empty($params[0]['amount'])) {
-        $params[0]['amount'] += $params[0]['amount'] * $percent/100 + $processingFee;
-        $params[0]['amount'] = number_format($params[0]['amount'], 2);
-        $form->setVar('_params', $params);
-        $form->set('params', $params);
+      foreach ($params as $key => &$value) {
+        if ($key == array_key_last($params) && !empty($value['amount'])) {
+          $value['amount'] += $value['amount'] * $percent/100 + $processingFee;
+        }
       }
+      $form->setVar('_params', $params);
+      $form->set('params', $params);
     }
   }
 
@@ -118,7 +119,7 @@ class CRM_Extrafee_Fee {
    * Get Extra fees overriden by payment processor.
    */
   public static function getProcessorExtraFees() {
-    $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings'), TRUE);
+    $ppExtraFeeSettings = (array) json_decode(Civi::settings()->get('processor_extra_fee_settings'), TRUE);
     foreach ($ppExtraFeeSettings as $ppID => $pp) {
       if (empty($pp['percent']) && empty($pp['processing_fee'])) {
         unset($ppExtraFeeSettings[$ppID]);

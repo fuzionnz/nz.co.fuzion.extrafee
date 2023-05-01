@@ -3,6 +3,7 @@
 CRM.$(function($) {
   var processor_extrafee = {/literal} {if $processor_extra_fee_values} {$processor_extra_fee_values} {else} 0 {/if}{literal};
   var extra_fee_settings = {/literal} {if $extra_fee_settings} {$extra_fee_settings} {else} 0 {/if}{literal};
+  var selected_payment_processor = {/literal} {if $selected_payment_processor} {$selected_payment_processor} {else} '' {/if}{literal};
 
   var isQuickConfig = {/literal}{$quick_config_display}{literal};
   var payNowPayment = {/literal} {if $payNowPayment} {$payNowPayment} {else} 0 {/if}{literal};
@@ -35,7 +36,9 @@ CRM.$(function($) {
     $('#pricesetTotal').append(optional_input + msg);
   }
 
-  $('input#extra_fee_add').on('change', function() { displayTotalAmount(calculateTotalFee()); });
+  $('input#extra_fee_add').on('change', function() {
+    displayTotalAmount(calculateTotalFee());
+  });
 
   /*
    * Thanks: https://stackoverflow.com/a/59268677/11400326
@@ -60,7 +63,7 @@ CRM.$(function($) {
     ( totalfee < 0 ) ? $('#pricelabel, #pricevalue').hide() : $('#pricelabel, #pricevalue').show();
   }
 
-  function formatExtraFee(amount, c, d, t){
+  function formatExtraFee(amount, c, d, t) {
     var n = amount,
       c = isNaN(c = Math.abs(c)) ? 2 : c,
       d = d == undefined ? "," : d,
@@ -87,6 +90,9 @@ CRM.$(function($) {
     var pp = $('input[name=payment_processor_id]:checked').val();
     if (typeof pp === 'undefined') {
       pp = $('input[name=payment_processor_id]').val();
+      if (selected_payment_processor && typeof pp === 'undefined') {
+        pp = selected_payment_processor;
+      }
     }
     if (typeof pp !== 'undefined' && pp != 0 && totalFee) {
       if (addExtraFee) {

@@ -57,7 +57,11 @@ function extrafee_civicrm_buildForm($formName, &$form) {
       'template' => "{$templatePath}/CRM/Extrafee/Form/processor_extra_fee.tpl"
     ));
   }
-  if (!in_array($formName, ['CRM_Contribute_Form_Contribution_Main', 'CRM_Event_Form_Registration_Register'])) {
+  if (!in_array($formName, [
+    'CRM_Contribute_Form_Contribution_Main',
+    'CRM_Event_Form_Registration_Register',
+    'CRM_Event_Form_Registration_AdditionalParticipant'
+    ])) {
     return;
   }
   $extraFeeSettings = json_decode(Civi::settings()->get('extra_fee_settings'), TRUE);
@@ -65,9 +69,26 @@ function extrafee_civicrm_buildForm($formName, &$form) {
   if (!CRM_Extrafee_Fee::isFormEligibleForExtraFee($form, $extraFeeSettings, $ppExtraFeeSettings)) {
     return;
   }
+  $addOptionalCheckbox = TRUE;
+  $freeze = FALSE;
   if (!empty($extraFeeSettings['percent']) || !empty($extraFeeSettings['processing_fee'])) {
+    $params = $form->getVar('_params');
+    if ($formName == 'CRM_Event_Form_Registration_AdditionalParticipant' && !empty($params[0]['payment_processor_id'])) {
+      $defaults['extra_fee_add'] = 1;
+      $form->setDefaults($defaults);
+      $freeze = TRUE;
+      $form->assign('selected_payment_processor', $params[0]['payment_processor_id']);
+      if (!empty($params[0]['extra_fee_add'])) {
+        $addOptionalCheckbox = $freeze = FALSE;
+      }
+    }
     CRM_Extrafee_Fee::displayFeeMessage($form, $extraFeeSettings);
-    CRM_Extrafee_Fee::addOptionalFeeCheckbox($form, $extraFeeSettings);
+    if ($addOptionalCheckbox) {
+      $element = CRM_Extrafee_Fee::addOptionalFeeCheckbox($form, $extraFeeSettings);
+      if ($freeze) {
+        $element->freeze();
+      }
+    }
   }
 }
 
@@ -87,7 +108,11 @@ function extrafee_civicrm_postProcess($formName, &$form) {
     Civi::settings()->set('processor_extra_fee_settings', json_encode($ppExtraFeeSettings));
   }
 
-  if (!in_array($formName, ['CRM_Contribute_Form_Contribution_Main', 'CRM_Event_Form_Registration_Register'])) {
+  if (!in_array($formName, [
+    'CRM_Contribute_Form_Contribution_Main',
+    'CRM_Event_Form_Registration_Register',
+    'CRM_Event_Form_Registration_AdditionalParticipant'
+    ])) {
     return;
   }
   $extraFeeSettings = json_decode(Civi::settings()->get('extra_fee_settings'), TRUE);
@@ -96,6 +121,10 @@ function extrafee_civicrm_postProcess($formName, &$form) {
     return;
   }
   $ppID = $form->getVar('_paymentProcessorID');
+  $params = $form->getVar('_params');
+  if ($formName == 'CRM_Event_Form_Registration_AdditionalParticipant' && empty($ppID) && !empty($params[0]['payment_processor_id'])) {
+    $ppID = $params[0]['payment_processor_id'];
+  }
   if ((!empty($extraFeeSettings['percent']) || !empty($extraFeeSettings['processing_fee'])) && !empty($ppID) && empty($form->_ccid)) {
     CRM_Extrafee_Fee::modifyTotalAmountInParams($formName, $form, $extraFeeSettings, $ppID);
   }
