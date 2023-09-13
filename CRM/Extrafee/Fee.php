@@ -64,12 +64,12 @@ class CRM_Extrafee_Fee {
     if ($formName == 'CRM_Contribute_Form_Contribution_Main') {
       if (!empty($form->_amount)) {
         $form->_amount += $form->_amount * $percent/100 + $processingFee;
-        $form->_amount = number_format($form->_amount, 2);
+        $form->_amount = CRM_Utils_Rule::cleanMoney($form->_amount);
         $form->set('amount', $form->_amount);
       }
       elseif ($amt = $form->get('amount')) {
         $form->_amount = $amt + $amt * $percent/100 + $processingFee;
-        $form->_amount = number_format($form->_amount, 2);
+        $form->_amount = CRM_Utils_Rule::cleanMoney($form->_amount);
         $form->set('amount', $form->_amount);
       }
     }
@@ -77,7 +77,7 @@ class CRM_Extrafee_Fee {
       $params = $form->getVar('_params');
       if (!empty($params[0]['amount'])) {
         $params[0]['amount'] += $params[0]['amount'] * $percent/100 + $processingFee;
-        $params[0]['amount'] = number_format($params[0]['amount'], 2);
+        $params[0]['amount'] = CRM_Utils_Rule::cleanMoney($params[0]['amount']);
         $form->setVar('_params', $params);
         $form->set('params', $params);
       }
