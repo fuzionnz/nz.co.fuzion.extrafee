@@ -39,7 +39,7 @@ function extrafee_civicrm_buildForm($formName, &$form) {
   if ($formName == 'CRM_Admin_Form_PaymentProcessor') {
     $defaults = [];
     if (!empty($form->_id)) {
-      $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings'), TRUE);
+      $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings') ?? '', TRUE);
       if (isset($ppExtraFeeSettings[$form->_id])) {
         $defaults = [
           'extra_fee_percentage' => $ppExtraFeeSettings[$form->_id]['percent'] ?? NULL,
@@ -60,8 +60,8 @@ function extrafee_civicrm_buildForm($formName, &$form) {
   if (!in_array($formName, ['CRM_Contribute_Form_Contribution_Main', 'CRM_Event_Form_Registration_Register'])) {
     return;
   }
-  $extraFeeSettings = json_decode(Civi::settings()->get('extra_fee_settings'), TRUE);
-  $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings'), TRUE);
+  $extraFeeSettings = json_decode(Civi::settings()->get('extra_fee_settings') ?? '', TRUE);
+  $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings') ?? '', TRUE);
   if (!CRM_Extrafee_Fee::isFormEligibleForExtraFee($form, $extraFeeSettings, $ppExtraFeeSettings)) {
     return;
   }
@@ -78,7 +78,7 @@ function extrafee_civicrm_buildForm($formName, &$form) {
  */
 function extrafee_civicrm_postProcess($formName, &$form) {
   if ($formName == 'CRM_Admin_Form_PaymentProcessor') {
-    $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings'), TRUE);
+    $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings') ?? '', TRUE);
     $ppExtraFeeSettings[$form->_id] = [
       'percent' => $form->_submitValues['extra_fee_percentage'] ?? NULL,
       'processing_fee' => $form->_submitValues['extra_fee_processing_fee'] ?? NULL,
@@ -90,8 +90,8 @@ function extrafee_civicrm_postProcess($formName, &$form) {
   if (!in_array($formName, ['CRM_Contribute_Form_Contribution_Main', 'CRM_Event_Form_Registration_Register'])) {
     return;
   }
-  $extraFeeSettings = json_decode(Civi::settings()->get('extra_fee_settings'), TRUE);
-  $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings'), TRUE);
+  $extraFeeSettings = json_decode(Civi::settings()->get('extra_fee_settings') ?? '', TRUE);
+  $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings') ?? '', TRUE);
   if (!CRM_Extrafee_Fee::isFormEligibleForExtraFee($form, $extraFeeSettings, $ppExtraFeeSettings)) {
     return;
   }

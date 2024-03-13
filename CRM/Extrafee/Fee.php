@@ -53,7 +53,7 @@ class CRM_Extrafee_Fee {
     }
     $processingFee = (float) CRM_Utils_Array::value('processing_fee', $extraFeeSettings, 0);
     $percent = CRM_Utils_Array::value('percent', $extraFeeSettings, 0);
-    $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings'), TRUE);
+    $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings') ?? '', TRUE);
     if (!empty($ppExtraFeeSettings[$ppId]['percent'])) {
       $percent = $ppExtraFeeSettings[$ppId]['percent'];
     }
@@ -106,6 +106,10 @@ class CRM_Extrafee_Fee {
         // We have matched on one of the processors we are enabled for
         return TRUE;
       }
+      // Exit current loop if there is no payment processor id.
+      if (empty($ppExtraFeeSettings[$paymentProcessorID])) {
+        continue;
+      }
       // If processor has custom extra fee configured, return true.
       if (!empty($ppExtraFeeSettings[$paymentProcessorID]['percent']) || !empty($ppExtraFeeSettings[$paymentProcessorID]['processing_fee'])) {
         return TRUE;
@@ -118,13 +122,14 @@ class CRM_Extrafee_Fee {
    * Get Extra fees overriden by payment processor.
    */
   public static function getProcessorExtraFees() {
-    $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings'), TRUE);
-    foreach ($ppExtraFeeSettings as $ppID => $pp) {
-      if (empty($pp['percent']) && empty($pp['processing_fee'])) {
-        unset($ppExtraFeeSettings[$ppID]);
+    $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings') ?? '', TRUE);
+    if ($ppExtraFeeSettings) {
+      foreach ($ppExtraFeeSettings as $ppID => $pp) {
+        if (empty($pp['percent']) && empty($pp['processing_fee'])) {
+          unset($ppExtraFeeSettings[$ppID]);
+        }
+      }
+      return $ppExtraFeeSettings;
       }
     }
-    return $ppExtraFeeSettings;
-  }
-
 }
