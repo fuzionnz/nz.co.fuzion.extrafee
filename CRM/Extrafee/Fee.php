@@ -7,14 +7,14 @@ use CRM_Extrafee_ExtensionUtil as E;
  *
  * @see https://wiki.civicrm.org/confluence/display/CRMDOC/QuickForm+Reference
  */
-class CRM_Extrafee_Fee {
+class CRM_Extrafee_Fee extends CRM_Contribute_Form_ContributionBase {
 
   /**
    * Display extra fee msg on payment page.
    */
   public static function displayFeeMessage($form, $extraFeeSettings) {
-    $processingFee = (float) CRM_Utils_Array::value('processing_fee', $extraFeeSettings, 0);
-    $percent = CRM_Utils_Array::value('percent', $extraFeeSettings, 0);
+    $processingFee = (float) $extraFeeSettings['processing_fee'] ?? 0;
+    $percent = $extraFeeSettings['percent'] ?? 0;
     $form->set('amount', 0);
     $form->assign('payNowPayment', FALSE);
     if (!empty($form->_ccid) && !empty($form->_pendingAmount)) {
@@ -51,8 +51,8 @@ class CRM_Extrafee_Fee {
     if (!empty($extraFeeSettings['optional']) && !CRM_Utils_Request::retrieveValue('extra_fee_add', 'String')) {
       return;
     }
-    $processingFee = (float) CRM_Utils_Array::value('processing_fee', $extraFeeSettings, 0);
-    $percent = CRM_Utils_Array::value('percent', $extraFeeSettings, 0);
+    $processingFee = (float) $extraFeeSettings['processing_fee'] ?? 0;
+    $percent = $extraFeeSettings['percent'] ?? 0;
     $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings') ?? '', TRUE);
     if (!empty($ppExtraFeeSettings[$ppId]['percent'])) {
       $percent = $ppExtraFeeSettings[$ppId]['percent'];
@@ -61,16 +61,25 @@ class CRM_Extrafee_Fee {
       $processingFee = $ppExtraFeeSettings[$ppId]['processing_fee'];
     }
 
-    if ($formName == 'CRM_Contribute_Form_Contribution_Main') {
-      if (!empty($form->_amount)) {
-        $form->_amount += $form->_amount * $percent/100 + $processingFee;
-        $form->_amount = round(CRM_Utils_Rule::cleanMoney($form->_amount), 2);
-        $form->set('amount', $form->_amount);
-      }
-      elseif ($amt = $form->get('amount')) {
-        $form->_amount = $amt + $amt * $percent/100 + $processingFee;
-        $form->_amount = round(CRM_Utils_Rule::cleanMoney($form->_amount), 2);
-        $form->set('amount', $form->_amount);
+    if (in_array($formName, [
+      'CRM_Contribute_Form_Contribution_Main',
+      'CRM_Contribute_Form_Contribution_Confirm',
+      'CRM_Contribute_Form_Contribution_ThankYou'
+    ])) {
+      if (!empty($form->_params['amount'])) {
+        $extrafee_amount = $form->_params['amount'] * $percent/100 + $processingFee;
+        $lineItems = $form->getOrder()->getLineItems();
+        $lineItems['extrafee'] = [
+          'label' => ts('Extra Fee'),
+          'field_title' => ts('Extra Fee'),
+          'qty' => 1,
+          'description' => '',
+          'html_type' => '',
+          'unit_price' => $extrafee_amount,
+          'line_total' => $extrafee_amount,
+          'line_total_inclusive' => $extrafee_amount,
+        ];
+        $form->setLineItems($lineItems);
       }
     }
     elseif ($formName == 'CRM_Event_Form_Registration_Register') {

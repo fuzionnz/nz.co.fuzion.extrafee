@@ -6,7 +6,7 @@ use CRM_Extrafee_ExtensionUtil as E;
 /**
  * Implements hook_civicrm_config().
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config
  */
 function extrafee_civicrm_config(&$config) {
   _extrafee_civix_civicrm_config($config);
@@ -15,7 +15,7 @@ function extrafee_civicrm_config(&$config) {
 /**
  * Implements hook_civicrm_install().
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_install
  */
 function extrafee_civicrm_install() {
   _extrafee_civix_civicrm_install();
@@ -24,7 +24,7 @@ function extrafee_civicrm_install() {
 /**
  * Implements hook_civicrm_install().
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_install
  */
 function extrafee_civicrm_buildForm($formName, &$form) {
   if ($formName == 'CRM_Admin_Form_PaymentProcessor') {
@@ -63,9 +63,31 @@ function extrafee_civicrm_buildForm($formName, &$form) {
 }
 
 /**
+ * Implements hook_civicrm_preProcess().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_preProcess/
+ */
+function extrafee_civicrm_preProcess($formName, &$form) {
+  if (!in_array($formName, [
+    'CRM_Contribute_Form_Contribution_Confirm',
+    'CRM_Contribute_Form_Contribution_ThankYou'
+  ])) {
+    return;
+  }
+  $extraFeeSettings = json_decode(Civi::settings()->get('extra_fee_settings') ?? '', TRUE);
+  $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings') ?? '', TRUE);
+  if (!CRM_Extrafee_Fee::isFormEligibleForExtraFee($form, $extraFeeSettings, $ppExtraFeeSettings)) {
+    return;
+  }
+  $ppID = $form->getVar('_paymentProcessorID') ?? $form->_paymentProcessor['id'] ?? NULL;
+  if ((!empty($extraFeeSettings['percent']) || !empty($extraFeeSettings['processing_fee'])) && !empty($ppID) && empty($form->_ccid)) {
+    CRM_Extrafee_Fee::modifyTotalAmountInParams($formName, $form, $extraFeeSettings, $ppID);
+  }
+}
+/**
  * Implements hook_civicrm_postProcess().
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_postProcess/
  */
 function extrafee_civicrm_postProcess($formName, &$form) {
   if ($formName == 'CRM_Admin_Form_PaymentProcessor') {
@@ -77,16 +99,19 @@ function extrafee_civicrm_postProcess($formName, &$form) {
     ];
     Civi::settings()->set('processor_extra_fee_settings', json_encode($ppExtraFeeSettings));
   }
-
-  if (!in_array($formName, ['CRM_Contribute_Form_Contribution_Main', 'CRM_Event_Form_Registration_Register'])) {
+  if (!in_array($formName, [
+    'CRM_Contribute_Form_Contribution_Main',
+    'CRM_Event_Form_Registration_Register'
+  ])) {
     return;
   }
+
   $extraFeeSettings = json_decode(Civi::settings()->get('extra_fee_settings') ?? '', TRUE);
   $ppExtraFeeSettings = json_decode(Civi::settings()->get('processor_extra_fee_settings') ?? '', TRUE);
   if (!CRM_Extrafee_Fee::isFormEligibleForExtraFee($form, $extraFeeSettings, $ppExtraFeeSettings)) {
     return;
   }
-  $ppID = $form->getVar('_paymentProcessorID');
+  $ppID = $form->getVar('_paymentProcessorID') ?? $form->_paymentProcessor['id'] ?? NULL;
   if ((!empty($extraFeeSettings['percent']) || !empty($extraFeeSettings['processing_fee'])) && !empty($ppID) && empty($form->_ccid)) {
     CRM_Extrafee_Fee::modifyTotalAmountInParams($formName, $form, $extraFeeSettings, $ppID);
   }
@@ -95,7 +120,7 @@ function extrafee_civicrm_postProcess($formName, &$form) {
 /**
  * Implements hook_civicrm_enable().
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_enable
  */
 function extrafee_civicrm_enable() {
   _extrafee_civix_civicrm_enable();
@@ -104,7 +129,7 @@ function extrafee_civicrm_enable() {
 /**
  * Implements hook_civicrm_navigationMenu().
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
  */
 function extrafee_civicrm_navigationMenu(&$menu) {
   _extrafee_civix_insert_navigation_menu($menu, 'Administer/CiviContribute', array(
