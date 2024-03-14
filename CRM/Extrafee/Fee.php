@@ -48,7 +48,7 @@ class CRM_Extrafee_Fee extends CRM_Contribute_Form_ContributionBase {
    *  Add % fee in submitted params.
    */
   public static function modifyTotalAmountInParams($formName, &$form, $extraFeeSettings, $ppId) {
-    if (!empty($extraFeeSettings['optional']) && !CRM_Utils_Request::retrieveValue('extra_fee_add', 'String')) {
+    if (!empty($extraFeeSettings['optional']) && empty($form->_params['extra_fee_add'])) {
       return;
     }
     $processingFee = (float) $extraFeeSettings['processing_fee'] ?? 0;
