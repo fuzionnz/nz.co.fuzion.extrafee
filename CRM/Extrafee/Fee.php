@@ -45,6 +45,20 @@ class CRM_Extrafee_Fee extends CRM_Contribute_Form_ContributionBase {
   }
 
   /**
+   * Get extra fee Price Field ID
+   */
+  public static function getExtraFeePriceFieldId() {
+    $priceField = \Civi\Api4\PriceField::get(TRUE)
+      ->addWhere('name', '=', 'extrafee')
+      ->execute()
+      ->first();
+    if (!empty($priceField['id'])) {
+      return $priceField['id'];
+    }
+    return NULL;
+  }
+
+  /**
    *  Add % fee in submitted params.
    */
   public static function modifyTotalAmountInParams($formName, &$form, $extraFeeSettings, $ppId) {
@@ -69,17 +83,22 @@ class CRM_Extrafee_Fee extends CRM_Contribute_Form_ContributionBase {
       if (!empty($form->_params['amount'])) {
         $extrafee_amount = $form->_params['amount'] * $percent/100 + $processingFee;
         $lineItems = $form->getOrder()->getLineItems();
-        $lineItems['extrafee'] = [
-          'label' => ts('Extra Fee'),
-          'field_title' => ts('Extra Fee'),
-          'qty' => 1,
-          'description' => '',
-          'html_type' => '',
-          'unit_price' => $extrafee_amount,
-          'line_total' => $extrafee_amount,
-          'line_total_inclusive' => $extrafee_amount,
-        ];
-        $form->setLineItems($lineItems);
+        if (!empty($lineItems)) {
+          $financialTypeId = reset($lineItems)['financial_type_id'] ?? 1;
+          $extraFeeLineItem = [
+            'label' => ts('Extra Fee'),
+            'field_title' => ts('Extra Fee'),
+            'qty' => 1,
+            'description' => '',
+            'html_type' => '',
+            'financial_type_id' => $financialTypeId,
+            'price_field_id' => self::getExtraFeePriceFieldId(),
+            'unit_price' => $extrafee_amount,
+            'line_total' => $extrafee_amount,
+            'line_total_inclusive' => $extrafee_amount,
+          ];
+          $form->getOrder()->setLineItem($extraFeeLineItem, 'extrafee');
+        }
       }
     }
     elseif ($formName == 'CRM_Event_Form_Registration_Register') {
