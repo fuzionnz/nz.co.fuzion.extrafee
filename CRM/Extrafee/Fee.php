@@ -62,8 +62,14 @@ class CRM_Extrafee_Fee extends CRM_Contribute_Form_ContributionBase {
    *  Add % fee in submitted params.
    */
   public static function modifyTotalAmountInParams($formName, &$form, $extraFeeSettings, $ppId) {
-    if (!empty($extraFeeSettings['optional']) && empty($form->_params['extra_fee_add'])) {
-      return;
+    $params = $form->getVar('_params');
+    $extraFeeOptional = $extraFeeSettings['optional'] ?? FALSE;
+    if ($extraFeeOptional) {
+      $selectedOnContributionPage = $form->_params['extra_fee_add'] ?? FALSE;
+      $selectedOnEventPage = $params[0]['extra_fee_add'] ?? FALSE;
+      if (!$selectedOnContributionPage && !$selectedOnEventPage) {
+        return;
+      }
     }
     $processingFee = (float) $extraFeeSettings['processing_fee'] ?? 0;
     $percent = $extraFeeSettings['percent'] ?? 0;
@@ -104,7 +110,6 @@ class CRM_Extrafee_Fee extends CRM_Contribute_Form_ContributionBase {
       }
     }
     elseif ($formName == 'CRM_Event_Form_Registration_Register') {
-      $params = $form->getVar('_params');
       if (!empty($params[0]['amount'])) {
         $params[0]['amount'] += $params[0]['amount'] * $percent/100 + $processingFee;
         $params[0]['amount'] = round(CRM_Utils_Rule::cleanMoney($params[0]['amount']), 2);
