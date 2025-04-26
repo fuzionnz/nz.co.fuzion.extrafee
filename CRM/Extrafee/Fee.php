@@ -41,7 +41,15 @@ class CRM_Extrafee_Fee extends CRM_Contribute_Form_ContributionBase {
   }
 
   public static function addOptionalFeeCheckbox($form, $extraFeeSettings) {
-    $form->add('checkbox', 'extra_fee_add', addslashes($extraFeeSettings['label']));
+    if (!empty($extraFeeSettings['optional'])) {
+      $form->add('checkbox', 'extra_fee_add', addslashes($extraFeeSettings['label']));
+      // Enable optional fee checkbox by default.
+      $enable = CRM_Utils_Request::retrieve('extra_fee', 'Boolean');
+      if (!empty($enable)) {
+        $defaults['extra_fee_add'] = $enable;
+        $form->setDefaults($defaults);
+      }
+    }
   }
 
   /**
