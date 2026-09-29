@@ -94,7 +94,7 @@ class CRM_Extrafee_Fee extends CRM_Contribute_Form_ContributionBase {
         if (!empty($lineItems)) {
           $financialTypeId = reset($lineItems)['financial_type_id'] ?? 1;
           $extraFeeLineItem = [
-            'label' => ts('Extra Fee'),
+            'label' => $extraFeeSettings['label'] ?? ts('Extra Fee'),
             'field_title' => ts('Extra Fee'),
             'qty' => 1,
             'description' => '',
